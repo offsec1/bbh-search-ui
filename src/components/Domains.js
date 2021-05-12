@@ -1,66 +1,36 @@
-import React from "react";
-import { makeStyles } from '@material-ui/core/styles';
-import {Link, Table, TableBody, TableCell, TableHead, TableRow, Typography} from "@material-ui/core";
-
-// Generate Mock Data
-function createData(id, date, name, shipTo, paymentMethod, amount) {
-    return { id, date, name, shipTo, paymentMethod, amount };
-}
-
-const rows = [
-    createData(0, '16 Mar, 2019', 'Elvis Presley', 'Tupelo, MS', 'VISA ⠀•••• 3719', 312.44),
-    createData(1, '16 Mar, 2019', 'Paul McCartney', 'London, UK', 'VISA ⠀•••• 2574', 866.99),
-    createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'MC ⠀•••• 1253', 100.81),
-    createData(3, '16 Mar, 2019', 'Michael Jackson', 'Gary, IN', 'AMEX ⠀•••• 2000', 654.39),
-    createData(4, '15 Mar, 2019', 'Bruce Springsteen', 'Long Branch, NJ', 'VISA ⠀•••• 5919', 212.79),
-];
-
-function preventDefault(event) {
-    event.preventDefault();
-}
+import React, {useEffect, useState} from "react";
+import {makeStyles} from '@material-ui/core/styles';
+import {DataGrid} from '@material-ui/data-grid';
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
-    seeMore: {
-        marginTop: theme.spacing(3)
+    container: {
+        height: '650px'
     }
 }))
 
+const columns = [
+    {field: 'id', headerName: 'ID', width: 200},
+    {field: 'host', headerName: 'Domain', width: 700},
+    {field: 'source', headerName: 'Source', width: 250},
+];
+
 export default function Domains() {
     const classes = useStyles();
+    const [rows, setRows] = useState([])
 
-    return(
-        <React.Fragment>
-            <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                Domains
-            </Typography>
-            <Table size="small">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Ship To</TableCell>
-                        <TableCell>Payment Method</TableCell>
-                        <TableCell align="right">Sale Amount</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.id}>
-                            <TableCell>{row.date}</TableCell>
-                            <TableCell>{row.name}</TableCell>
-                            <TableCell>{row.shipTo}</TableCell>
-                            <TableCell>{row.paymentMethod}</TableCell>
-                            <TableCell align="right">{row.amount}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            <div className={classes.seeMore}>
-                <Link color="primary" href="#" onClick={preventDefault}>
-                    See more orders
-                </Link>
-            </div>
-        </React.Fragment>
+    useEffect(() => {
+        axios.get(process.env.REACT_APP_API_URL + '/domain/all', {
+            headers: {'x-api-key': process.env.REACT_APP_API_KEY}
+        }).then((res) => {
+            setRows(res.data)
+        })
+    })
+
+    return (
+        <div className={classes.container}>
+            <DataGrid rows={rows} columns={columns} pageSize={10} checkboxSelection/>
+        </div>
     )
 
 }
