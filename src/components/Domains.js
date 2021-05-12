@@ -25,7 +25,7 @@ export default function Domains() {
         }).then((res) => {
             setRows(res.data)
         })
-    })
+    }, [])
 
     return (
         <div className={classes.container}>
