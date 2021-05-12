@@ -8,7 +8,6 @@ const theme = createMuiTheme({
     palette: {
         type: 'dark'
     },
-
 })
 
 ReactDOM.render(
